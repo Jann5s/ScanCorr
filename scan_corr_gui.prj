@@ -1,0 +1,159 @@
+<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
+  <configuration build-checksum="2769912672" file="C:\Users\Astra\CloudStation\GT_scan_artifacts\GUI_v2\scan_corr_gui.prj" location="C:\Users\Astra\CloudStation\GT_scan_artifacts\GUI_v2" name="scan_corr_gui" preferred-package-location="C:\Users\Astra\CloudStation\GT_scan_artifacts\GUI_v2\scan_corr_gui\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+    <param.appname>scan_corr</param.appname>
+    <param.icon>${PROJECT_ROOT}\scan_corr_gui_resources\icon.ico</param.icon>
+    <param.icons>
+      <file>${PROJECT_ROOT}\scan_corr_gui_resources\icon_48.png</file>
+      <file>${PROJECT_ROOT}\scan_corr_gui_resources\icon_32.png</file>
+      <file>${PROJECT_ROOT}\scan_corr_gui_resources\icon_24.png</file>
+      <file>${PROJECT_ROOT}\scan_corr_gui_resources\icon_16.png</file>
+    </param.icons>
+    <param.version>2.01</param.version>
+    <param.authnamewatermark>Jan Neggers; Eva Héripré</param.authnamewatermark>
+    <param.email>jan.neggers@centralesupelec.fr; eva.heripre@centralesupelec.fr</param.email>
+    <param.company>MATMECA</param.company>
+    <param.summary>Correcting scan artifacts from pairs of orthogonally scanned images</param.summary>
+    <param.description>Ce deuxième Groupe de Travail, intitulé « Un bon coup de balai pour nos MEB », a été initié en mai 2017.
+
+Les erreurs de balayage dans les MEB sont connues mais difficiles à apprécier et sont limitantes pour l’exploitation quantitative des images. Au sein de ce groupe, une stratégie de correction a été proposée via une double acquisition des images en variant la direction de balayage. Ces deux images sont alors combinées pour produire une image corrigée de ces défauts. Un logiciel a été développé au sein du groupe et est partagé avec l’ensemble des partenaires.</param.description>
+    <param.screenshot>${PROJECT_ROOT}\icon\cropped-equipex4-JN.jpg</param.screenshot>
+    <param.guid />
+    <param.installpath.string>\MATMECA\scan_corr\</param.installpath.string>
+    <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
+    <param.logo>${PROJECT_ROOT}\icon\cropped-equipex4-JN.jpg</param.logo>
+    <param.install.notes />
+    <param.target.install.notes />
+    <param.intermediate>${PROJECT_ROOT}\scan_corr_gui\for_testing</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}\scan_corr_gui\for_redistribution_files_only</param.files.only>
+    <param.output>${PROJECT_ROOT}\scan_corr_gui\for_redistribution</param.output>
+    <param.logdir>${PROJECT_ROOT}\scan_corr_gui</param.logdir>
+    <param.enable.clean.build>false</param.enable.clean.build>
+    <param.user.defined.mcr.options />
+    <param.target.type>subtarget.standalone</param.target.type>
+    <param.support.packages />
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>false</param.package.mcr>
+    <param.no.mcr>false</param.no.mcr>
+    <param.web.mcr.name>scan_corr_installer</param.web.mcr.name>
+    <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
+    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
+    <param.windows.command.prompt>true</param.windows.command.prompt>
+    <param.create.log>true</param.create.log>
+    <param.log.file>scan_corr.log</param.log.file>
+    <param.native.matlab>false</param.native.matlab>
+    <param.checkbox>false</param.checkbox>
+    <param.example />
+    <param.help.text />
+    <unset>
+      <param.company />
+      <param.guid />
+      <param.installpath.string />
+      <param.installpath.combo />
+      <param.install.notes />
+      <param.target.install.notes />
+      <param.intermediate />
+      <param.files.only />
+      <param.output />
+      <param.logdir />
+      <param.enable.clean.build />
+      <param.target.type />
+      <param.support.packages />
+      <param.web.mcr />
+      <param.package.mcr />
+      <param.no.mcr />
+      <param.package.mcr.name />
+      <param.no.mcr.name />
+      <param.windows.command.prompt />
+      <param.native.matlab />
+      <param.checkbox />
+      <param.example />
+      <param.help.text />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\scan_corr_GUI.m</file>
+    </fileset.main>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}\scan_corr_GUI.m</file>
+      <file>${PROJECT_ROOT}\scan_corr_im_mex.mexw64</file>
+      <file>${PROJECT_ROOT}\scan_corr_mex.mexw64</file>
+    </fileset.resources>
+    <fileset.package>
+      <file>${PROJECT_ROOT}\lib</file>
+      <file>${PROJECT_ROOT}\scan_corr.m</file>
+      <file>${PROJECT_ROOT}\scan_corr_GUI.ini</file>
+      <file>${PROJECT_ROOT}\scan_corr_GUI.m</file>
+      <file>${PROJECT_ROOT}\scan_corr_GUI_Help.txt</file>
+      <file>${PROJECT_ROOT}\scan_corr_im_mex.cpp</file>
+      <file>${PROJECT_ROOT}\scan_corr_mex.cpp</file>
+      <file>${PROJECT_ROOT}\scan_corr_test.m</file>
+    </fileset.package>
+    <fileset.depfun>
+      <file>${MATLAB_ROOT}\toolbox\local\userpath.m</file>
+      <file>${PROJECT_ROOT}\scan_corr.m</file>
+      <file>${PROJECT_ROOT}\scan_corr_GUI.ini</file>
+      <file>${PROJECT_ROOT}\scan_corr_GUI_Help.txt</file>
+    </fileset.depfun>
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}\scan_corr_gui\for_testing" name="readme.txt" optional="true">C:\Users\Astra\CloudStation\GT_scan_artifacts\GUI_v2\scan_corr_gui\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\scan_corr_gui\for_testing" name="splash.png" optional="false">C:\Users\Astra\CloudStation\GT_scan_artifacts\GUI_v2\scan_corr_gui\for_testing\splash.png</file>
+      <file location="${PROJECT_ROOT}\scan_corr_gui\for_testing" name="scan_corr.exe" optional="false">C:\Users\Astra\CloudStation\GT_scan_artifacts\GUI_v2\scan_corr_gui\for_testing\scan_corr.exe</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2018a</root>
+      <toolboxes>
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabcoder" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="embeddedcoder" />
+        <toolbox name="gpucoder" />
+        <toolbox name="polyspacebugfinder" />
+      </toolboxes>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <gpucoder>
+          <enabled>true</enabled>
+        </gpucoder>
+      </toolbox>
+      <toolbox>
+        <polyspacebugfinder>
+          <enabled>true</enabled>
+        </polyspacebugfinder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

@@ -1,0 +1,133 @@
+This tool (scan_corr_GUI) is a Graphical User Interface that interacts
+with the function scan_corr.m available separately. Basically, it allows
+batch processing of pairs of images to be corrected for scan-line
+artifacts.
+
+Quick Help:
+-------------------------
+- Start by adding images using the left panel in this tab
+- Make sure they are ordered H,V,H,V,etc. using <up> and <down>
+- Select a savepath in the center panel
+- All other options listed have reasonable defaults, change them if you want
+- Go to the <Correction> tab and press <Go>
+- Depending on the settings, various files will be generated
+
+Main Concept:
+-------------------------
+The correction tool works on a pair of images, the first scanned horizontally (H), the second scanned vertically (V).
+
+The basic idea of the artifact correction is that both images are incorrect, but, there exists a third unknown image that represents the sample without scanning artifacts. The hypothesis is that each scan line is less perturbed within the line compared to perturbations between lines. Consequently, the pixel rows of H are moved each as one, while the pixel columns of V are moved each as one while minimizing the difference between the two. The average between the finally obtained corrected images will be the best representation of this unknown image.
+
+This algorithm performs a few steps sequentially:
+- Preparation:
+Here V is rotated and the center square of both images are cropped.
+
+- Rigid Body Translation:
+A single rigid body translation is obtained using FFT cross-correlation. Using this translation H and V are re-cropped (from the original image shifting H horizontally and V vertically with integer pixel shifts.
+
+- Steps:
+Finding the corrected image iteratively can be challenging depending on the input images. To robustly converge to the solution a pyramid approach is applied. Here, the problem is treated stepwise where to solution obtained for each step will be the initial guess for the next starting with a zero initial guess for the first step. Only the final step will be important for the quality of the result. The other steps serve only to robustly get to this final step.
+ 
+In a pyramid approach, the complexity of the problem is gradually increased. This is done in two ways:
+  - Gradually increase the number of degrees of freedom
+  - Gradually increase the image details
+The <Steps> section of the tool allows the user to define these steps with this strategy in mind. The first two settings <PolyOrder> and <LineThickness> allow controlling the degrees of freedom. The following two options <Bin> and <Blur> control the amount of detail in the image. In general all of these 4 options should decrease from one step to the next.
+
+A note on judging the quality of the corrected image:
+-------------------------
+The types of images that can be given to the tool can be very diverse. Consequently, it is not guaranteed that the tool will converge to the correct solution. In that case, the corrected image may contain worse artifacts than either of the input images. We have tried our best to minimize these by making the tool as robust as possible, but there are limits.
+  The responsibility remains with the user to verify if the correction was a success. Here the residual images are of utmost importance. The tool provides options that will store the residuals in various forms. It is highly advised to store these residuals and to analyze them before using the corrected images. However, analyzing residuals can be challenging, so we provide some typical issues to look for here:
+- Anything that is not white noise. The perfect residual image only contains white (Gaussian) noise. Any deviation from this may indicate an issue. However, there is one exception. One or both of the images may be perturbed with a low (spatial) frequency brightness or contrast change without affecting the quality of the corrected image. This perturbation will be correctly removed by the tool. A typical example of this is when the microscopist has zoomed on the image to adjust focus and thereby created some local carbon deposition central in the final image. If the zoomed rectangle is not too small on the final image, this large-scale change in gray level will not affect the result too much.
+- Stipes and Bands: if a pixel row (or group of rows) failed to be correctly positioned it will leave a band of elevated residuals. These bands may intersect with similar orthogonal errors that occurred in the other image rendering the errors more as blocks. The texture may be seen as similar to plaid or tartan.
+- Fringes: when the material points of one image are not positioned correctly it will create a repeated positive/negative signature of the residual image. Here the missing displacement will be orthogonal to the fringes.
+- Dual vision: this is a severe case of the former. If a part of the sample is placed completely at the wrong location, it will appear twice in the residual image, once positive and once negative. Typically very visual when there is a bright or dark spot on the sample surface.
+
+Details per setting:
+-------------------------
+Save path:
+  The folder where all results will be stored
+
+Save logfile:
+  Save a text file with the same information as the status panel.
+
+Save corrected image:
+  Save the corrected image as a .tif, digitized either using 8-bit or 16-bit integer graylevels. The corrected image in the .mat is saved as a 32-bit floating number and is thus slightly more detailed.
+
+Save residual image:
+  Save the residual image as a .tif. This is basically the same image as the final residual shown during convergence except it is digitized to 8 or 16 bits. Since residuals can be both negative and positive, the image is shifted before digitizing such that negative is black, positive is white and zero is gray. The gray levels are amplified with a factor of 10.
+
+Save final screen:
+  Save a screen capture of the correction screen at the end. This image may serve as a quick summary with the residual image, the corrected displacements, and the last few lines from the status screen.
+
+Save data:
+  Save the results as a .mat file. This file contains the residual image, the corrected image and the applied displacements. Both images are saved using 32-bit floating-point numbers.
+
+Save RBT Images
+  Save the cropped and rotated image as they are after the Rigid Body Translation section. These will have the same size and are comparable to the final corrected image.
+
+TIF bit depth:
+  Specify to digitize TIF files ad either 8-bit or 16-bit unsigned integers.
+
+Preparation ------------------
+Rotate H (V):
+  Rotate the image H (or V) counterclockwise N times. By default this is set to 0 for H and 1 for V. This is because in general SEMs store their images in the scan direction and thus the V image has to be rotated to allow a usable comparison to the H image.
+
+Auto remove databar:
+  This will attempt to detect a databar in the bottom of the image and remove it before starting the correction. If this fails and the databar remains, another option is to exclude it by defining the Region Of Interest ROI accordingly.
+
+ROI:
+  The size of the edge (boundary) to exclude from the Region Of Interest (ROI). The ROI is defined relative to the images as they are after the <Preparation> and <Rigid Body Translation>. The algorithm will still return results in region outside of the ROI, they just do not influence the computations. The displacements outside of the ROI will be extrapolated linearly using 10% of the data near the edge. Alternatively, it is possible to define each edge of the ROI separately [left, right, top, bottom].
+
+Select ROI:
+   Use the mouse to draw the region of interest in the preview window in the left. Click once using the left mouse button to select one corner, click again to select the opposite corner and close the tool. Note that, the actual definition of the ROI will be relative to the rotated and cropped image as they are after the RBT part. Consequently, the drawn ROI may be inaccurate. A yellow box is drawn in the preview to indicate the estimated image after cropping.
+
+Rigid Body Translation ------------------
+  This part uses a cross-correlation algorithm computed using FFT to estimate rigid body translations (RBT). Afterwards it will cut out the largest possible rectangle from both H and V without interpolating. 
+
+FFT Window:
+  The above method applies the Fast Fourier Transform, which assumes periodicity. Typically, our images are not periodic, which will create some border artifacts. The applied window will greatly reduce these artifacts. The parameter is called the radius in a Tukey window which roughly translates to the relative border around the image that is affected by the window.
+
+Pyramid Steps ------------------
+The box in this section lists the currently defined steps (5 by default), with the settings of each step reflected in the 9 settings shown below. The settings below will be updated to reflect the currently selected step and changes made to each setting below will only affect the currently selected steps. If multiple steps are selected, the change will be applied identically to all steps. Use <Add>, <Copy>, <Remove>, <Up> or <Down> to modify the number of steps or their order.
+
+PolyOrder
+  When set to any other setting then <None> will apply a global polynomial of order p on each of the four displacement curves (uxh, uyh, uxv, uyv). This will force the displacement to be of polynomial shape and thus severely regularizes the movement of all the pixel lines. Ergo, the pixels lines are no longer individually free. This drastically reduces the number of degrees of freedom to solve for. This is a good option for the first few steps as it is very robust. However, scanning artifacts are better described line-by-line, therefore, it is better to disable this for the final steps by choosing <None>.
+  Note, it is advised to set the LineThickness to 1 when using PolyOrder. There is no benefit from grouping lines when also using polynomial regularization.
+
+LineThickness
+  Group pixel lines (and columns) such that N lines are forced to move as one. The tool will evaluate all the pixel values in the pixel lines, but only allow them to move as one. The two groups that are on each edge of the ROI may be thicker than the specified value. Grouping lines will reduce the number of degrees of freedom making the algorithm more robust but less precise. It is advised to decrease this setting over the steps, ending with a LineThickness of 1 in the last step. Note, PolyOrder is an even stronger regularization and thus it is advised to only set LineThickness > 1 when Polyorder is set to <None>. LineThickness is always defined with respect to the original pixel size, ergo, it is scaled according to the used <Bin> value.
+
+Bin
+  Bin the images to superpixels of size NxN. Namely, it will reduce the image size by averaging the graylevels of groups of pixels. Bin = 1 means do nothing. This has a blurring effect on the image while at the same time drastically reducing the number of pixels. The blurring effect will make the algorithm more robust but less precise. Reducing the number of pixels will make it much faster. It is advised to use Bin values between 8 and 1 decreasing along the steps.
+
+Blur
+  Apply a Gaussian blur filter of radius R to the images. This removes details from the image making the algorithm more robust but less precise. Blur = 0 means do nothing. The effect is similar as with <Bin>, however, this time there is no computational advantage. The applied blur is of higher quality compared to the blur due to binning. Blur values in the range of 50 to 0 are common. The higher end depends a lot on the image size and the size of the visual pattern. As with the above, it is advised to gradually decrease the Blur amount during the steps, finally, using Blur = 0 for the final step. Although <Blur> is applied after <Bin> it is always defined with respect to the original pixel size, ergo, it is scaled according to the used <Bin> value.
+
+ConvCrit
+  The convergence criteria in terms of the Root Mean Square of the displacement, in units of pixels, below which the procedure is considered converged. Since the corrected image only depends on the final step it is advised to use a weak criterium for all steps, say 0.01, except for the final step, which merits a strict criterium, say 0.0001.
+  
+IterMax
+  Set the maximum number of iterations for this step. One iteration first treats the horizontal image and then treats the vertical image. After each part (horizontal and vertical) the corrected image is computed as the average of the two corrected (and thus interpolated) images. Each part themselves can contain multiple iterations called sub-iterations. Note, the iterations shown in the status screen summary of each step are the total number of sub-iterations for both modes for the current step.
+
+SubIterMax
+  Set the maximum number of sub-iterations. When treating either the horizontal or the vertical image, it is possible to iterate a few times without recomputing the corrected image. These iterations are quite fast but the improvements become small relatively quickly because the corrected image requires updating. In general, the number of effective sub-iterations will be somewhere below 10.
+
+TrustRegion
+  Limit the maximum update per iteration to this distance R. This may help to prevent the algorithm from "running away" when still in the unstable situation far from the solution. When close the solution, the update will typically be much smaller than this R and thus <TrustRegion> will no longer have an effect. 
+
+InterpMethod
+  Set the order of the BSpline sub-pixel interpolation method. The interpolator used in this tool is based on the work of P. Thevenaz et al. [1]. A low order is computationally faster while a high order gives better interpolation results and thus a higher quality corrected image. BSplines of order 3 are nearly as fast as order 2 but of significantly higher quality. It is advised to use these for all steps except the last one. Higher interpolation orders are preferred for the final step, e.g. order 5, to reduce the interpolation errors even more. Note, a typical artifact of DIC is "integer locking" which is the effect where displacements are "drawn" towards integer values, creating displacement steps. Increasing the interpolation order typically reduces this effect.
+
+Contact
+----------------------------------
+This tool is the result of the MATMECA workgroup collaborations. Please contact either of the following for information on licenses and or to discuss errors bugs and features.
+Jan Neggers: jan.neggers@centralesupelec.fr
+Eva Héripré: eva.heripre@centralesupelec.fr
+
+Warranty
+----------------------------------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+References
+-------------------------
+[1] P. Thevenaz, T. Blu, M. Unser, "Interpolation Revisited," IEEE Transactions on Medical Imaging, vol. 19, no. 7, pp. 739-758, July 2000.
