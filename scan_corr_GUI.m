@@ -18,7 +18,7 @@ defini.TIFdepth = 1; % 1:8 or 2:16
 defini.SaveLOG = true;
 defini.SaveCOR = true;
 defini.SaveRES = true;
-defini.SavePNG = true;
+defini.SavePNG = false;
 defini.SaveMAT = true;
 defini.SaveRBT = true;
 
@@ -182,6 +182,13 @@ Hf.Tag = 'ScanCorr';
 Hf.PaperUnits = 'inches';
 Hf.PaperPosition = pos.fig.*[0 0 1e-2 1e-2];
 Hf.PaperSize = pos.fig(3:4).*[1e-2 1e-2];
+
+% force light theme
+if ~isMATLABReleaseOlderThan("R2025a")
+    drawnow;pause(0.1);
+    theme(Hf,'light');
+end
+
 
 % Create the TABS
 tabgp = uitabgroup(Hf,'Position',[0 0 1 1]);
@@ -1288,7 +1295,7 @@ set(hdl_a(3),'Position',[xpos(2),ypos(1),w2,h1]);
             else
                 fontcol = color.fontB;
             end
-            Hb.imlist.String{k} = sprintf('<html><font color="%s">%03d %s: %s</font></html>',fontcol,ceil(k/2),hvstr,filename);
+            Hb.imlist.String{k} = sprintf('%03d %s: %s',ceil(k/2),hvstr,filename);
         end
     end
 
